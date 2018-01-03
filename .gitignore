@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+inst/doc
+mlbgameday.Rproj
+README.Rmd
+cran-comments.md
+gameday.sqlite3
