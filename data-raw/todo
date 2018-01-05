@@ -1,4 +1,7 @@
 added xls files to inst dir.
 
-1) Need to find a way to read the xls files from package. Look at GameDay.R in openwar for this
+* I think matching action to atbat can be done by joining on event_num. This would work in either package.
+
+1) Need to find a way to read the xls files from package. Look at GameDay.R in openwar for this.
+
 2) Edit xls files to output pitchrx style data frames

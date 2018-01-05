@@ -1,4 +1,4 @@
-Package: mlbgameday
+Package: gamedaydev
 Title: Tools to Gather Data from Major League Baseball Advanced Media (MLBAM)
 Version: 0.0.1.999999
 Authors@R: person("Kris", "Eberwein", email = "eberwein@knights.ucf.edu",
@@ -18,7 +18,9 @@ Imports:
 	iterators,
 	parallel,
 	doParallel,
-	DBI
+	DBI,
+	xslt,
+	readr
 Suggests:
 	testthat,
 	knitr,
