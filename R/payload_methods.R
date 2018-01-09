@@ -109,7 +109,7 @@ payload.gd_game_events <- function(urlz, ...) {
     
     return(innings_df)
 }
-    
+
 
 
 #' An internal function for inning_all payload.
@@ -188,9 +188,10 @@ payload.gd_inning_all <- function(urlz, ...) {
                                         
                                         runner <- purrr::map_dfr(runner_nodes, function(x) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
-                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
+                                            out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
+                                            out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
+                                            out$num <- as.character(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
+                                            out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
                                             out
@@ -208,7 +209,7 @@ payload.gd_inning_all <- function(urlz, ...) {
                                     )
                                 }
                             }
-
+    
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
     atbat <- dplyr::bind_rows(out$atbat)
@@ -216,7 +217,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     pitch <- dplyr::bind_rows(out$pitch)
     runner <- dplyr::bind_rows(out$runner)
     po <- dplyr::bind_rows(out$po)
-
+    
     innings_df <- list(atbat=atbat, action=action, pitch=pitch, runner=runner, po=po)
     # Add batter and pitcher names to the atbat data frame
     player.env <- environment()
@@ -229,7 +230,7 @@ payload.gd_inning_all <- function(urlz, ...) {
     
     innings_df <- structure(innings_df, class="list_inning_all") %>%
         transform_pload()
-
+    
     return(innings_df)
 }
 
