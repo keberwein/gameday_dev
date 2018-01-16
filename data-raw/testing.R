@@ -2,13 +2,7 @@ library(gamedaydev)
 
 innings_df <- get_payload(start = "2016-08-03", end = "2016-08-04")
 
-action <- innings_df$action %>% subset(gameday_link == "/gid_2016_08_04_chamlb_detmlb_1")
-
-# disabled the transform_payload function at the end of innings_all method.
-# Seems that the $ add-ons on the dataframes are mis-matching lines. 
-# Action returns correct if all $ are commented out, but mis-matches when they are present.
-
-
+action <- innings_df$action # This subset was messing up columns. %>% subset(gameday_link == "/gid_2016_08_04_chamlb_detmlb_1")
 
 
 #Matching event numbers are under pitch and action. Pitch is a child of atbat, maybe join like that?
