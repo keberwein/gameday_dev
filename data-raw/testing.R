@@ -18,6 +18,5 @@ runner <- innings_df$runner
 z= select(runner, num, event_num, gameday_link)
 
 
-
 # Need to join the matches to action.
 test <- dplyr::left_join(action, z, by = c("event_num", "gameday_link"))
