@@ -21,7 +21,12 @@ z= select(runner, num, event_num, gameday_link)
 # Need to join the matches to action.
 test <- dplyr::left_join(action, z, by = c("event_num", "gameday_link"))
 
+
+
+
 urlz <- "http://gd2.mlb.com/components/game/mlb/year_2016/month_08/day_04/gid_2016_08_04_chamlb_detmlb_1/inning/inning_all.xml"
+
+file <- tryCatch(xml2::read_xml(urlz[[1]][[1]], n=256), error=function(e) NULL)
 
 atbat_nodes <- xml2::xml_find_all(file, "./inning/top/atbat")
 action_nodes <- xml2::xml_find_all(file, "./inning/top/action")
@@ -34,10 +39,12 @@ x = action_nodes
 # This gives the atbat immediatley following the action.
 xml_siblings(x)
 
-# This works, but what if atbat doesn't follow action immediatley?
-num_node <- grep("action", xml_contents(xml_parent(x))) + 1
-xml_contents(xml_parent(x))[[num]]
+# The trick here is to get action_nodes as a child of atbat nodes
+for (i in seq_along(action_nodes)) {
+    xml_add_child(atbat_nodes, action_nodes[i], .where = "after", free = T)
+}
 
+xml_children(atbat_nodes)
 
 
 actiont <- purrr::map_dfr(action_nodes, function(x) {
@@ -50,3 +57,10 @@ actiont <- purrr::map_dfr(action_nodes, function(x) {
     out
 })
 
+
+
+library(pitchRx)
+
+cdat <- scrape(game.ids = "gid_2016_08_04_chamlb_detmlb_1")
+
+cactioin <- cdat$action
