@@ -28,32 +28,34 @@ urlz <- "http://gd2.mlb.com/components/game/mlb/year_2016/month_08/day_04/gid_20
 
 file <- tryCatch(xml2::read_xml(urlz[[1]][[1]], n=256), error=function(e) NULL)
 
-atbat_nodes <- xml2::xml_find_all(file, "./inning/top/atbat")
-action_nodes <- xml2::xml_find_all(file, "./inning/top/action")
-pitch_nodes <- xml2::xml_find_all(file, "./inning/top/atbat/pitch")
-runner_nodes <- xml2::xml_find_all(file, "./inning/top/atbat/runner")
-po_nodes <- xml2::xml_find_all(file, "./inning/top/atbat/po")
+# This is working.
+atbat_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat"), 
+                 xml2::xml_find_all(file, "./inning/bottom/atbat")) 
+# Not getting the correct inning count from this...
+action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
+                  xml2::xml_find_all(file, "./inning/bottom/actioin"))
+# But when I do this it works...should be a list of 14.
+act_top = xml2::xml_find_all(file, "./inning/top/action")
+act_bot = xml2::xml_find_all(file, "./inning/bottom/action")
+action_nodes <- c(act_top, act_bot)
 
-x = action_nodes
-
-# This gives the atbat immediatley following the action.
-xml_siblings(x)
-
-# The trick here is to get action_nodes as a child of atbat nodes
 for (i in seq_along(action_nodes)) {
-    xml_add_child(atbat_nodes, action_nodes[i], .where = "after", free = T)
+    xml_add_child(atbat_nodes[[i]], action_nodes[[i]], .where = "after", free = T)
 }
 
-xml_children(atbat_nodes)
+action_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/action"), 
+                  xml2::xml_find_all(file, "./inning/bottom/atbat/actioin"))
 
 
-actiont <- purrr::map_dfr(action_nodes, function(x) {
+
+action <- purrr::map_dfr(action_nodes, function(x) {
     out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-    out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
-    out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
-    out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
-    out$url <- url
-    out$gameday_link <- gameday_link
+    out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("num"))
+    out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(xml2::xml_parent(x))) %>% xml2::xml_attr("next"))
+    out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
+    out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(xml2::xml_parent(x))))
+    #out$url <- url
+    #out$gameday_link <- gameday_link
     out
 })
 
