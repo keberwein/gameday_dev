@@ -1,4 +1,4 @@
-library(gamedaydev)
+library(mlbgameday)
 library(dplyr)
 
 innings_df <- get_payload(start = "2016-08-03", end = "2016-08-04")
