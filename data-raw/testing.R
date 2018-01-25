@@ -3,8 +3,7 @@ library(dplyr)
 
 innings_df <- get_payload(start = "2016-08-03", end = "2016-08-04")
 
-action <- innings_df$action
-runner <- innings_df$runner
+
 
 
 
