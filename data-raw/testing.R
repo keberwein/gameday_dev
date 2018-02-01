@@ -20,5 +20,5 @@ cpitch <- cdat$pitch
 cpo <- cdat$po 
 crunner <- cdat$runner
 
-# Need to add num to po.
+# QA pitch and runner
 
