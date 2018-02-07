@@ -77,9 +77,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       des_es = if (exists('des_es', where = payload_obj$atbat)) des_es else NA) %>%
         
         dplyr::mutate(num=as.numeric(num), b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
-                      start_tfs=as.numeric(start_tfs), batter=as.numeric(batter), pitcher=as.numeric(pitcher),
-                      event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
-                      away_team_runs=as.numeric(away_team_runs)) %>%
+                      batter=as.numeric(batter), pitcher=as.numeric(pitcher), date=as.factor(date)) %>%
         # Rename a couple columns to fit with the pitchRx schema.
         dplyr::rename(atbat_des = des, atbat_des_es = des_es) %>%
         
@@ -95,10 +93,8 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event2_es = if (exists('event2_es', where = payload_obj$action)) event2_es else NA,
                       des_es = if (exists('des_es', where = payload_obj$action)) des_es else NA) %>%
         
-        dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o),
-                      tfs=as.numeric(tfs), player=as.numeric(player), pitch=as.numeric(pitch),
-                      event_num=as.numeric(event_num), home_team_runs=as.numeric(home_team_runs),
-                      away_team_runs=as.numeric(away_team_runs)) %>%
+        dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o), player=as.numeric(player), pitch=as.numeric(pitch),
+                      num=as.character(num)) %>%
     
     dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
         away_team_runs, url, inning_side, inning, next_, num, score, event2, event2_es, gameday_link)
@@ -112,23 +108,21 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       # tfs and tfs_zulu columns may be blank for older data sets. If blank, set them to NA.
                       tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu)) %>%
         
-        dplyr::mutate(id=as.numeric(id), tfs=as.numeric(tfs), x=as.numeric(x), y=as.numeric(y),
-                      event_num=as.numeric(event_num), start_speed=as.numeric(start_speed), 
+        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), start_speed=as.numeric(start_speed), 
                       end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
                       pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
                       x0=as.numeric(x0), y0=as.numeric(y0), z0=as.numeric(z0), vx0=as.numeric(vx0), 
                       vy0=as.numeric(vy0), vz0=as.numeric(vz0), ax=as.numeric(ax), ay=as.numeric(ay),
-                      az=as.numeric(az), break_y=as.numeric(break_y), break_angle=as.numeric(break_angle),
-                      break_length=as.numeric(break_length), type_confidence=as.numeric(type_confidence),
+                      zone=as.numeric(zone), break_length=as.numeric(break_length), type_confidence=as.numeric(type_confidence),
                       nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
-                      on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b)) %>%
+                      on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b), count=as.factor(count)) %>%
         
         dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
                       sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
                       type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, url, inning_side, inning, next_, num, on_1b, on_2b,
                       on_3b, gameday_link, count)
     
-    payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), event_num=as.numeric(event_num)) %>%
+    payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), num=as.numeric(num)) %>%
         dplyr::select(id, start, end, event, event_num, url, inning_side, inning, next_, num, score, rbi, earned, gameday_link)
     
     payload_obj$po %<>% 
@@ -136,8 +130,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         dplyr::mutate(play_guid = if (exists('play_guid', where = payload_obj$po)) play_guid else NA,
                       catcher = if (exists('catcher', where = payload_obj$po)) catcher else NA,
                       des_es = if (exists('des_es', where = payload_obj$po)) des_es else NA,
-                      event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA,
-                      event_num  = as.numeric(event_num)) %>%
+                      event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA) %>%
         
         dplyr::select(des, des_es, event_num, play_guid, url, inning_side, inning, next_, num, catcher, gameday_link)
     
