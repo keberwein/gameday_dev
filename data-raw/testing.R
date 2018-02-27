@@ -1,24 +1,37 @@
 library(mlbgameday)
 library(dplyr)
+library(DBI)
+library(RSQLite)
 
-innings_df <- get_payload(start = "2016-08-03", end = "2016-08-03")
 
-atbat <- innings_df$atbat
-action <- innings_df$action
-pitch <- innings_df$pitch
-po <- innings_df$po
-runner <- innings_df$runner
+con <- dbConnect(RSQLite::SQLite(), dbname = "gameday.sqlite3")
+
+library(pitchRx)
+
+scrape(start = "2016-08-03", end = "2016-08-03", con = con)
+
+get_payload(start = "2016-08-04", end = "2016-08-04", db_con=con)
+
+dates <- dbGetQuery(con,"SELECT * FROM runner")
 
 
 library(pitchRx)
 
-cdat <- scrape(start = "2016-08-03", end = "2016-08-03")
+cdatt <- scrape(start = "2016-08-03", end = "2016-08-03")
 
-cabtat <- cdat$atbat
-cactioin <- cdat$action
-cpitch <- cdat$pitch
-cpo <- cdat$po 
-crunner <- cdat$runner
+innings <- get_payload(start = "2016-08-03", end = "2016-08-03")
 
-# QA pitch and runner
+
+atbat = innings$atbat
+action = innings$action
+pitch = innings$pitch
+runner = innings$runner
+po = innings$po
+
+
+catbat = cdatt$atbat
+caction = cdatt$action
+cpitch = cdatt$pitch
+crunner = cdatt$runner
+cpo = cdatt$po
 
