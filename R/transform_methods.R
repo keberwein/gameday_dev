@@ -81,12 +81,6 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         # Rename a couple columns to fit with the pitchRx schema.
         dplyr::rename(atbat_des = des, atbat_des_es = des_es) %>%
         
-        # Column order gets crossed up in some cases, which makes it difficult to "chunk" into a database. Order manually for now.
-        #dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, end_tfs_zulu, stand, b_height, p_throws, atbat_des, 
-        #              atbat_des_es, event_num, event, event_es, play_guid, home_team_runs, away_team_runs, url, inning_side, 
-        #              inning, next_, score, event2, event2_es, event3, event4, batter_name, pitcher_name, gameday_link, date)
-    
-
         dplyr::select(pitcher, batter, num, b, s, o, start_tfs, start_tfs_zulu, stand, b_height, p_throws, atbat_des, 
                       atbat_des_es, event, score, home_team_runs, away_team_runs, url, inning_side, inning, next_, event2, event3,
                       batter_name, pitcher_name, event4, gameday_link, date, end_tfs_zulu, event_num, event_es, play_guid, event2_es)
@@ -101,12 +95,9 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         
         dplyr::mutate(b=as.numeric(b), s=as.numeric(s), o=as.numeric(o), player=as.numeric(player), pitch=as.numeric(pitch),
                       num=as.character(num)) %>%
-    
-    #dplyr::select(b, s, o, des, des_es, event, event_es, tfs, tfs_zulu, player, pitch, event_num, play_guid, home_team_runs,
-    #    away_team_runs, url, inning_side, inning, next_, num, score, event2, event2_es, gameday_link)
-    
-    dplyr::select(b, s, o, des, des_es, event, tfs, tfs_zulu, player, pitch, url, inning_side, inning, next_, num, score,
-                  home_team_runs, away_team_runs, event2, gameday_link, event_es, event_num, play_guid, event2_es)
+        
+        dplyr::select(b, s, o, des, des_es, event, tfs, tfs_zulu, player, pitch, url, inning_side, inning, next_, num, score,
+                      home_team_runs, away_team_runs, event2, gameday_link, event_es, event_num, play_guid, event2_es)
     
     payload_obj$pitch %<>%
         # Add columns that may not exist.
@@ -115,9 +106,11 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       event2 = if (exists('event2', where = payload_obj$pitch)) event2 else NA,
                       event2_es = if (exists('event2_es', where = payload_obj$pitch)) event2_es else NA,
                       # tfs and tfs_zulu columns may be blank for older data sets. If blank, set them to NA.
-                      tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu)) %>%
+                      tfs = ifelse(tfs == "", NA, tfs), tfs_zulu = ifelse(tfs_zulu == "", NA, tfs_zulu),
+                      # Some spring training and minor league games may be missing speed data.
+                      start_speed = ifelse(start_speed == "", NA, as.numeric(start_speed))) %>%
         
-        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), start_speed=as.numeric(start_speed), 
+        dplyr::mutate(id=as.numeric(id), x=as.numeric(x), y=as.numeric(y), 
                       end_speed=as.numeric(end_speed), sz_top=as.numeric(sz_top), sz_bot=as.numeric(sz_bot),
                       pfx_x=as.numeric(pfx_x), pfx_z=as.numeric(pfx_z), px=as.numeric(px), pz=as.numeric(pz),
                       x0=as.numeric(x0), y0=as.numeric(y0), z0=as.numeric(z0), vx0=as.numeric(vx0), 
@@ -126,19 +119,12 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       nasty=as.numeric(nasty), spin_dir=as.numeric(spin_dir), spin_rate=as.numeric(spin_rate),
                       on_1b=as.numeric(on_1b), on_2b=as.numeric(on_2b), on_3b=as.numeric(on_3b), count=as.factor(count)) %>%
         
-        #dplyr::select(des, des_es, id, type, code, tfs, tfs_zulu, x, y, event_num, sv_id, play_guid, start_speed, end_speed, sz_top,         
-        #              sz_bot, pfx_x, pfx_z, px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, 
-        #              type_confidence, zone, nasty, spin_dir, spin_rate, cc, mt, url, inning_side, inning, next_, num, on_1b, on_2b,
-        #              on_3b, gameday_link, count)
-    
-    
         dplyr::select(des, des_es, id, type, tfs, tfs_zulu, x, y, sv_id, start_speed, end_speed, sz_top, sz_bot, pfx_x, pfx_z,           
                       px, pz, x0, y0, z0, vx0, vy0, vz0, ax, ay, az, break_y, break_angle, break_length, pitch_type, type_confidence, zone,           
                       nasty, spin_dir, spin_rate, cc, mt, url, inning_side, inning, next_, num, on_1b, on_2b, on_3b, count, gameday_link,
                       code, event_num, play_guid)
     
     payload_obj$runner %<>% dplyr::mutate(id=as.numeric(id), num=as.numeric(num)) %>%
-        #dplyr::select(id, start, end, event, event_num, url, inning_side, inning, next_, num, score, rbi, earned, gameday_link)
         dplyr::select(id, start, end, event, score, rbi, earned, url, inning_side, inning, next_, num, gameday_link, event_num)
     
     payload_obj$po %<>% 
@@ -148,7 +134,6 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
                       des_es = if (exists('des_es', where = payload_obj$po)) des_es else NA,
                       event_num = if (exists('event_num', where = payload_obj$po)) event_num else NA) %>%
         
-        #dplyr::select(des, des_es, event_num, play_guid, url, inning_side, inning, next_, num, catcher, gameday_link)
         dplyr::select(des, url, inning_side, inning, next_, num, gameday_link, des_es, event_num, play_guid, catcher)
     
     return(payload_obj)
@@ -190,4 +175,3 @@ transform_pload.df_game <- function(payload_obj, ...) {
     
     return(payload_obj)
 }
-

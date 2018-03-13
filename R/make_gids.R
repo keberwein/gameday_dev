@@ -19,13 +19,13 @@
 #' 
 
 make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids=NULL, ...) {
-    
+
     root <- paste0("http://gd2.mlb.com/components/game/", league, "/")
     
     if(!is.null(game_ids)){
         game_ids <- paste0(root, "year_", stringr::str_sub(game_ids, 5, 8), "/month_", stringr::str_sub(game_ids, 10, 11), 
-                           "/day_", stringr::str_sub(game_ids, 13, 14), "/", game_ids)
-        
+               "/day_", stringr::str_sub(game_ids, 13, 14), "/", game_ids)
+
         made_gids <- game_urls(game_ids, dataset = dataset)
     }
     
@@ -64,7 +64,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             newdates <- paste0("year_", format(newgidz, "%Y"), "/month_",
                                format(newgidz, "%m"), "/day_", format(newgidz, "%d"))
             
-            
+    
             # Scrape the miniscoreboard for that day so we can extract game_id.
             final_gids <- validate_gids(newdates)
         }
@@ -74,16 +74,16 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             # Find gap between the last_date in the gids and the date the user input.
             gaplist <- seq(as.Date(start), as.Date(end), by = "day")
             gapdates <- paste0("year_", format(gaplist, "%Y"), "/month_",
-                               format(gaplist, "%m"), "/day_", format(gaplist, "%d"))
+                            format(gaplist, "%m"), "/day_", format(gaplist, "%d"))
             
             # Veryify those gids were games played. If played, scrape the miniscoreboard for that day so we can extract game_id.
             # This piece takes a while. It has to tryCatch every url.
             gapgids <- validate_gids(gapdates)
-            
+    
             # Get the other gids not in the end window.
             startgids <- filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
                 mutate(gid = as.character(gid), date_dt = as.Date(date_dt))
-            
+                
             startgids$url <- paste0(root, league, "/", "year", str_sub(startgids$gid, 4, 8), "/", "month_",
                                     str_sub(startgids$gid, 10, 11), "/", "day_", str_sub(startgids$gid, 13, 14), 
                                     "/", startgids$gid)
