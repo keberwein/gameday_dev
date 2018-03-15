@@ -175,7 +175,7 @@ transform_pload.list_linescore <- function(payload_obj, ...) {
                       time_date, time_date_aw_lg, time_date_hm_lg, time_hm_lg, time_zone, time_zone_aw_lg,      
                       time_zone_hm_lg, top_inning, tz_aw_lg_gen, tz_hm_lg_gen, venue, venue_id,             
                       venue_w_chan_loc, wrapup_link, xmlns.xs, date, runner_on_2b, runner_on_3b, runner_on_1b)
-        
+    
     return(payload_obj)
 }
 
