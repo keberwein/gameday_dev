@@ -3,7 +3,6 @@
 #' @param ... additional arguments
 #' @keywords internal
 #' @export
-#' 
 
 transform_pload <- function(payload_obj, ...) UseMethod("transform_pload", payload_obj)
 
