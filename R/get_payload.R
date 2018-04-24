@@ -135,4 +135,3 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     }
 }
 
-
