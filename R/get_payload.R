@@ -44,6 +44,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
     if(is.null(dataset)) dataset <- "inning_all"
     message("Gathering Gameday data, please be patient...")
     
+    
     if(!is.null(game_ids)){
         urlz <- make_gids(game_ids = game_ids, dataset = dataset)
     }
@@ -134,3 +135,5 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         return(innings_df)
     }
 }
+
+
