@@ -375,5 +375,3 @@ payload.gd_game <- function(urlz, ...) {
     return(innings_df)
 }
 
-
-
