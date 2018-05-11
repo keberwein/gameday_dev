@@ -8,7 +8,7 @@
 #' @param end_date Date of last game for which you want data. Format must be in YYYY-MM-DD format.
 #' @param playerid The MLBAM ID for the player who's data you want to query.
 #' @param player_type The player type. Can be 'batter' or 'pitcher'
-#' @importFrom utils read.csv
+#' @importFrom readr read_csv
 #' @export
 #' @examples
 #' \dontrun{
@@ -97,14 +97,15 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
                       end_date, "&team=&position=&hfRO=&home_road=&&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&")
     }
     
-    # Do a try/catch to show errors that the user may encounter while downloading.
-    # 
-    # Let's a built-in function for this, similar to the one from blscraper.
+   
+    
+
+    
     tryCatch(
         {
             print("These data are from BaseballSevant and are property of MLB Advanced Media, L.P. All rights reserved.")
             print("Grabbing data, this may take a minute...")
-            payload <- utils::read.csv(url)
+            payload <- read_csv(url)
             processed_payload <- process_statcast_payload(payload)
             message("URL read and payload acquired successfully.")
             return(processed_payload)
