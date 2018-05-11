@@ -19,6 +19,15 @@ NULL
 #' @export
 NULL
 
+#' dt op
+#'
+#' @name :=
+#' @rdname dt_op
+#' @keywords internal
+#' @importFrom data.table :=
+#' @export
+NULL
+
 #' @title comb_pload
 #' @description Internal combine function for foreach loop used in get_payload()
 #' @param x target
@@ -34,7 +43,6 @@ comb_pload <- function(x, ...) {
 #' Internal function to add a column of dates to a list of gids.
 #' @param gidlist A list from the internal data set \code{game_id}
 #' @param ... additional arguments.
-#' @importFrom dplyr rename
 #' @importFrom stringr str_replace str_sub
 #' @keywords internal
 #' @export

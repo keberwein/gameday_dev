@@ -99,7 +99,9 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     
    
     
-
+    # New version of the below. Need to rename payload since we've got a class named that.
+    #out <- try_url(read_csv(url))
+    
     
     tryCatch(
         {

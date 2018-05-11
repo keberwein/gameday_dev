@@ -8,7 +8,6 @@
 #' @param home_only Logical. Collect only home games. The default is FALSE.
 #' @param away_only Logical. Collect only away games. The default is FALSE.
 #' @param ... additional arguments
-#' @importFrom dplyr bind_rows filter
 #' @importFrom stringr str_detect
 #' @export
 #' @examples
@@ -29,7 +28,6 @@
 #'
 #' }
 
-
 search_gids <- function(team=NULL, start=NULL, end=NULL, venue=NULL, game_type=NULL, home_only=FALSE, away_only=FALSE, ...) {
     # Check for user errors.
     if(isTRUE(home_only) & isTRUE(away_only)) {
@@ -40,39 +38,40 @@ search_gids <- function(team=NULL, start=NULL, end=NULL, venue=NULL, game_type=N
     
     if(!is.null(team)){
         team <- upperfirst(team)
-        home_games <- game_ids %>% dplyr::filter(stringr::str_detect(home_team_name, as.character(team)))
-        away_games <- game_ids %>% dplyr::filter(stringr::str_detect(away_team_name, as.character(team)))
-        game_ids <- dplyr::bind_rows(home_games, away_games)
+        home_games <- game_ids %>% subset(stringr::str_detect(home_team_name, as.character(team)))
+        away_games <- game_ids %>% subset(stringr::str_detect(away_team_name, as.character(team)))
+        game_ids <- rbind(home_games, away_games)
+
     }
     
     if(!is.null(start)){
         start <- as.Date(start)
-       game_ids %<>% dplyr::filter(as.Date(date_dt) >= start)
+        game_ids %<>% subset(as.Date(date_dt) >= start)
     }
     
     if(!is.null(end)){
         end <- as.Date(end)
-        game_ids %<>% dplyr::filter(as.Date(date_dt) <= end)
+        game_ids %<>% subset(as.Date(date_dt) <= end)
     }
     
     if(!is.null(game_type)){
         game_t <- upperfirst(game_type)
-        game_ids %<>% dplyr::filter(game_type == as.character(game_t))
+        game_ids %<>% subset(game_type == as.character(game_t))
     }
     
     if(!is.null(venue)){
         venue_n <- upperfirst(venue)
-        game_ids %<>% dplyr::filter(stringr::str_detect(venue, as.character(venue_n)))
+        game_ids %<>% subset(stringr::str_detect(venue, as.character(venue_n)))
     }
     
     if(isTRUE(home_only)){
         team <- upperfirst(team)
-        game_ids %<>% dplyr::filter(home_team_name == as.character(team))
+        game_ids %<>% subset(home_team_name == as.character(team))
     }
     
     if(isTRUE(away_only)){
         team <- upperfirst(team)
-        game_ids %<>% dplyr::filter(away_team_name == as.character(team))
+        game_ids %<>% subset(away_team_name == as.character(team))
     }
     
     gids <- as.character(game_ids$gameday_link)

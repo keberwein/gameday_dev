@@ -7,7 +7,7 @@
 #' @keywords internal
 #' @import xml2
 #' @importFrom stringr str_sub str_replace_all
-#' @importFrom dplyr bind_rows left_join rename mutate
+#' @importFrom data.table data.table rbindlist
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -43,8 +43,9 @@ payload.gd_bis_boxscore <- function(urlz, ...) {
                                     )
                                 }
                             }
-    batting <- dplyr::bind_rows(out$batting)
-    pitching <- dplyr::bind_rows(out$pitching)
+    batting <- data.table::rbindlist(out$batting, fill = T)
+    pitching <- data.table::rbindlist(out$pitching, fill = T)
+    
     innings_df <- list(batting=batting, pitching=pitching)
     innings_df <- structure(innings_df, class="list_bis_boxscore") %>%
         transform_pload()
@@ -118,7 +119,7 @@ payload.gd_game_events <- function(urlz, ...) {
 #' @keywords internal
 #' @import xml2
 #' @importFrom stringr str_sub str_replace_all
-#' @importFrom dplyr bind_rows left_join rename select arrange
+#' @importFrom data.table data.table setnames rbindlist
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @importFrom tidyr fill
@@ -222,20 +223,23 @@ payload.gd_inning_all <- function(urlz, ...) {
     
     # The foreach loop returns a named list of nested data frames. We need to bind the dfs under 
     # each name and pack the binded dfs back into a list that can be returned.
-    atbat <- dplyr::bind_rows(out$atbat)
-    action <- dplyr::bind_rows(out$action)
-    pitch <- dplyr::bind_rows(out$pitch)
-    runner <- dplyr::bind_rows(out$runner)
-    po <- dplyr::bind_rows(out$po)
+    atbat <- data.table::rbindlist(out$atbat, fill = T)
+    action <- data.table::rbindlist(out$action, fill = T)
+    pitch <- data.table::rbindlist(out$pitch, fill = T)
+    runner <- data.table::rbindlist(out$runner, fill = T)
+    po <- data.table::rbindlist(out$po, fill = T)
     
     # Make of game timeline of atbat and action so we know which atbat to assign an action to.
-    acts <- action %>% dplyr::select(tfs_zulu, inning, inning_side, des)
-    bats <- atbat %>% dplyr::select(end_tfs_zulu, num, inning, inning_side) %>% dplyr::rename(tfs_zulu = end_tfs_zulu)
-    events <- dplyr::bind_rows(acts, bats) %>%
-        dplyr::arrange(tfs_zulu) %>% dplyr::mutate(num = as.numeric(num)) %>%
+    acts <- action %>% .[, c("tfs_zulu", "inning", "inning_side", "des")]
+    bats <- atbat %>% .[, c("end_tfs_zulu", "num", "inning", "inning_side")] %>% 
+        data.table::setnames(old = "end_tfs_zulu", new = "tfs_zulu")
+    #bats <- atbat %>% dplyr::select(end_tfs_zulu, num, inning, inning_side) %>% dplyr::rename(tfs_zulu = end_tfs_zulu)
+    events <- rbind(acts, bats, fill = T) %>%
+        .[order(tfs_zulu)] %>% .[, num := as.numeric(num)] %>%
+        #dplyr::arrange(tfs_zulu) %>% dplyr::mutate(num = as.numeric(num)) %>%
         tidyr::fill(num, .direction = "up") %>% na.omit()
-    
-    action <- dplyr::left_join(action, events, by = c("tfs_zulu", "inning", "inning_side", "des"))
+
+    action <- merge(action, events, by = c("tfs_zulu", "inning", "inning_side", "des"))
     
     # Calculate the pitch count for the pitching table.
     pitch <- pitch_count(dat=pitch)
@@ -246,9 +250,13 @@ payload.gd_inning_all <- function(urlz, ...) {
     data(player_ids, package="mlbgameday", envir=player.env)
     player_ids$id <- as.character(player_ids$id)
     
-    innings_df$atbat %<>% dplyr::left_join(player_ids, by = c("batter" = "id")) %>% 
-        dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
-        dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
+    #innings_df$atbat %<>% dplyr::left_join(player_ids, by = c("batter" = "id")) %>% 
+    #    dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
+    #    dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
+    
+    innings_df$atbat %<>%  merge(player_ids, by.x = "batter", by.y = "id") %>%
+        merge(player_ids, by.x = "pitcher", by.y = "id") %>%
+        data.table::setnames(old = c("full_name.x", "full_name.y"), new = c("batter_name", "pitcher_name"))
     
     innings_df <- structure(innings_df, class="list_inning_all") %>%
         transform_pload()
@@ -294,7 +302,7 @@ payload.gd_inning_hit <- function(urlz, ...) {
 #' @keywords internal
 #' @import xml2
 #' @importFrom stringr str_sub str_replace_all
-#' @importFrom dplyr bind_rows rename
+#' @importFrom data.table data.table rbindlist
 #' @importFrom purrr map_dfr
 #' @importFrom stats setNames
 #' @import foreach
@@ -329,8 +337,8 @@ payload.gd_linescore <- function(urlz, ...) {
                                     )
                                 }
                             }
-    game <- dplyr::bind_rows(out$game)
-    game_media <- dplyr::bind_rows(out$game_media)
+    game <- data.table::rbindlist(out$game, fill = T)
+    game_media <- data.table::rbindlist(out$game_media, fill = T)
     innings_df <- list(game=game, game_media=game_media)
     innings_df <- structure(innings_df, class="list_linescore") %>%
         transform_pload()

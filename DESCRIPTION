@@ -9,7 +9,6 @@ Depends:
 Imports:
 	magrittr,
 	xml2,
-	dplyr,
 	stringr,
 	purrr,
 	tidyr,
@@ -20,8 +19,8 @@ Imports:
 	parallel,
 	doParallel,
 	DBI,
-	xslt,
-	readr
+	readr,
+	data.table
 Suggests:
 	testthat,
 	knitr,
