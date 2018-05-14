@@ -20,7 +20,8 @@ Imports:
 	doParallel,
 	DBI,
 	readr,
-	data.table
+	data.table,
+	dplyr
 Suggests:
 	testthat,
 	knitr,
