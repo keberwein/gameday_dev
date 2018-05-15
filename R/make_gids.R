@@ -7,7 +7,7 @@
 #' @param ... additional arguments
 #' @importFrom purrr map
 #' @importFrom stringr str_sub str_replace_all
-#' @importFrom data.table setnames data.table setcolorder
+#' @importFrom dplyr mutate filter
 #' @importFrom utils data head tail
 #' @import foreach
 #' @keywords internal
@@ -43,13 +43,13 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
         data(game_ids, package = "mlbgameday", envir = gidenv)
         
         # Add a date column to gid data to make life easier.
-        gid_dates <- data.table::data.table(game_ids) %>% data.table::setnames(old = "gameday_link", new = "gid")
+        gid_dates <- dplyr::rename(game_ids, gid = gameday_link)
         last_date <- as.Date(tail(gid_dates$date_dt, 1))
         first_date <- as.Date(head(gid_dates$date_dt, 1))
         
         # If we've got the whole range of gids internally, just grab them and format.
         if(start >= first_date & end <= last_date){
-            final_gids <- subset(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(end))
+            final_gids <- dplyr::filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(end))
             final_gids$url <- paste0(root, "year_", stringr::str_sub(final_gids$date_dt, 1, 4), "/month_",
                                      stringr::str_sub(final_gids$date_dt, 6,7), "/day_", 
                                      stringr::str_sub(final_gids$date_dt, 9, 10),
@@ -81,16 +81,16 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             gapgids <- validate_gids(gapdates)
     
             # Get the other gids not in the end window.
-            startgids <- subset(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
-                .[, `:=` (gid = as.character(gid), date_dt = as.Date(date_dt))]
+            startgids <- filter(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
+                mutate(gid = as.character(gid), date_dt = as.Date(date_dt))
                 
-            startgids$url <- paste0(root, league, "/", "year", stringr::str_sub(startgids$gid, 4, 8), "/", "month_",
-                                    stringr::str_sub(startgids$gid, 10, 11), "/", "day_", stringr::str_sub(startgids$gid, 13, 14), 
+            startgids$url <- paste0(root, league, "/", "year", str_sub(startgids$gid, 4, 8), "/", "month_",
+                                    str_sub(startgids$gid, 10, 11), "/", "day_", str_sub(startgids$gid, 13, 14), 
                                     "/", startgids$gid)
             
-            startgids <- startgids$url
+            startgids <- select(startgids, url)
             
-            final_gids <- c(startgids, gapgids)
+            final_gids <- c(startgids$gid, gapgids)
         }
         
         made_gids <- game_urls(final_gids, dataset = dataset)

@@ -1,6 +1,6 @@
 library(doParallel)
-library(DBI)
-library(RSQLite)
+#library(DBI)
+#library(RSQLite)
 
 # First we need to register our parallel cluster.
 # Set the number of cores to use as the machine's maximum number of cores minus 1 for background processes.

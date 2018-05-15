@@ -27,22 +27,22 @@ validate_gids <- function(gidslist=NULL, league="mlb", ...) {
     
     # Do a tryCatch along the dates. If the url exists, get the payload from miniscorboard.
     out <- foreach::foreach(i = seq_along(minilist), .inorder=FALSE) %dopar% {
-        file <- tryCatch(xml2::read_xml(minilist[[i]]), error=function(e) NULL)
-        if(!is.null(file)){
-            mini_nodes <- xml2::xml_find_all(file, "./game")
-            mini <- purrr::map_dfr(mini_nodes, function(x) {
-                out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
-                out
-            })
-        }
+                                file <- tryCatch(xml2::read_xml(minilist[[i]]), error=function(e) NULL)
+                                if(!is.null(file)){
+                                    mini_nodes <- xml2::xml_find_all(file, "./game")
+                                        mini <- purrr::map_dfr(mini_nodes, function(x) {
+                                            out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
+                                            out
+                                        })
+                                }
     }
     
     games <- dplyr::bind_rows(out)
     
     gidz <- games %>%
         dplyr::mutate(url = paste0(root, lg, "/", "year_", str_sub(gameday_link, 1, 4), "/", "month_",
-                                   str_sub(gameday_link, 6, 7), "/", "day_", str_sub(gameday_link, 9, 10), 
-                                   "/gid_", gameday_link)) %>% 
+                                                str_sub(gameday_link, 6, 7), "/", "day_", str_sub(gameday_link, 9, 10), 
+                                                "/gid_", gameday_link)) %>% 
         select(url)
     # Needs to be a list so payload will read it correct
     gidz <- gidz$url %>% as.list
