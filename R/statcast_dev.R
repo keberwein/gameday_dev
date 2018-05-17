@@ -37,10 +37,19 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     # The else if statements are obnoxious, could probably replace with a single case statement.
     
     base_url <- "https://baseballsavant.mlb.com/statcast_search/csv?all=true&hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea="
-    elem1 <- "%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
-    elem2 <- "&game_date_lt="
-    elem3 <- "&team=&position=&hfRO=&home_road=&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
-    elem4 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
+    elem1 <- "%7C&hfSit=&player_type="
+    elem2 <- "&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
+    elem3 <- "&game_date_lt="
+    elem4 <- "&team=&position=&hfRO=&home_road=&batters_lookup%5B%5D="
+    elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
+    
+    # These are the url filed types:
+    # Urls are identical if all these fields exist
+    # year
+    # player_type
+    # start
+    # end
+    # playerid
     
     ifelse(is.null(playerid) & is.null(player_type), url <- paste0(base_url, year, elem1, start_date, elem2, end_date, elem3), 
            ifelse(!is.null(playerid) & is.null(player_type), url <- paste0(base_url, year, elem1, start_date, elem2, end_date, elem3, playerid, elem4), 
@@ -98,9 +107,10 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     }
     
    
+
     
     # New version of the below. Need to rename payload since we've got a class named that.
-    #out <- try_url(read_csv(url))
+    #out <- checkurl(read_csv(url))
     
     
     tryCatch(
