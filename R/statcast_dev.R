@@ -21,6 +21,7 @@
 
 scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_type=NULL) {
     # Check to make sure args are in the correct format.
+    if(is.null(player_type)) player_type <- "batter"
     if(!is.character(start_date) | !is.character(end_date)) message("Please wrap your dates in quotations in 'yyyy-mm-dd' format.")
     if(as.Date(start_date)<="2015-03-01") message("Some metrics such as Exit Velocity and Batted Ball Events have only been compiled since 2015.")
     if(as.Date(start_date)<="2008-03-25") message("The data are limited to the 2008 MLB season and after.")
@@ -31,7 +32,20 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     
     # extract season from start_date
     
-    year <- substr(start_date, 1,4)
+    #year <- substr(start_date, 1,4)
+    
+    # These are the url filed types:
+    # Urls are identical if all these fields exist
+    args <- list(
+    start_date <- start_date,
+    end_date <- end_date,
+    year <- substr(start_date, 1,4),
+    player_type <- player_type,
+    playerid <- playerid) %>% purrr::set_names("start_date", "end_date", "year", "player_type", "playerid")
+    
+    for(i in seq_along(args)){
+        if(is.null(args[[i]])) args[[i]] <- as.character("")
+    }
     
     # Looks like the url parsing could be much cleaner.
     # The else if statements are obnoxious, could probably replace with a single case statement.
@@ -43,21 +57,10 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     elem4 <- "&team=&position=&hfRO=&home_road=&batters_lookup%5B%5D="
     elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
     
-    # These are the url filed types:
-    # Urls are identical if all these fields exist
-    # year
-    # player_type
-    # start
-    # end
-    # playerid
+    url <- paste0(base_url, args$year, elem1, player_type, elem2,
+                  args$start_date, elem3, args$end_date, elem4, args$playerid, elem5)
     
-    ifelse(is.null(playerid) & is.null(player_type), url <- paste0(base_url, year, elem1, start_date, elem2, end_date, elem3), 
-           ifelse(!is.null(playerid) & is.null(player_type), url <- paste0(base_url, year, elem1, start_date, elem2, end_date, elem3, playerid, elem4), 
-                  ifelse(!is.null(playerid) & player_type=='batter', url <- paste0(base_url, year, elem1, player_type, start_date, elem2, end_date, elem3, playerid, elem4), 
-                         ifelse(!is.null(playerid) & player_type=='pitcher', url <- paste0(base_url, year, elem1, player_type, start_date, elem2, end_date, elem3, playerid, elem4),
-                                ifelse(is.null(playerid) & player_type=='pitcher', url <- base_url, year, elem1, start_date, elem2, end_date, elem3,
-                                       url <- base_url, year, elem1, start_date, elem2, end_date, elem3)))))
-    
+    ## The above is working with example one in usage. Need more tests.
     
     if(is.null(playerid) & is.null(player_type)) {
         message("No player_type specified. Player_type will default to 'batter'.")
