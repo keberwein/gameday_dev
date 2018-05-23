@@ -54,13 +54,14 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     elem1 <- "%7C&hfSit=&player_type="
     elem2 <- "&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
     elem3 <- "&game_date_lt="
-    elem4 <- "&team=&position=&hfRO=&home_road=&batters_lookup%5B%5D="
+    elem4 <- "&team=&position=&hfRO=&home_road=&"
+    ifelse(!is.null(playerid), playerelem <- paste0(player_type, "s_", "batters_lookup%5B%5D="), playerelem <- "")
     elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
     
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
                   args$start_date, elem3, args$end_date, elem4, args$playerid, elem5)
     
-    ## The above is working with example one in usage. Need more tests.
+    # Test case 4 is fixed. Still need to do individual pitcher and batter, and also all pitchers and all batters.
     
     if(is.null(playerid) & is.null(player_type)) {
         message("No player_type specified. Player_type will default to 'batter'.")
