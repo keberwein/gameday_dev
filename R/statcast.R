@@ -1,11 +1,10 @@
-
-#' This is DEV and needs to be transformed into a payload_method.
-#' 
+#' This is DEV and needs to be transformed into a payload_method
 #' @param start Date of first game for which you want data. Format must be in YYYY-MM-DD format.
 #' @param end Date of last game for which you want data. Format must be in YYYY-MM-DD format.
 #' @param player_id The MLBAM ID for the player who's data you want to query.
 #' @param player_type The player type. Can be 'batter' or 'pitcher'
 #' @importFrom readr read_csv
+#' @importFrom purrr set_names
 #' @export
 #' @examples
 #' \dontrun{
@@ -47,11 +46,6 @@ statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
                   args$start_date, elem3, args$end_date, elem4, args$playerid, elem5)
 
-    # New version of the below. Need to rename payload since we've got a class named that.
-    #out <- checkurl(read_csv(url))
-    #
-    gamedaydev::checkurl(url)
-    
     if(isTRUE(checkurl(url))) out <- readr::read_csv(url)
     else message("Could not execute query. Please check your connection or try another query.")
 }
