@@ -32,14 +32,13 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     
     # extract season from start_date
     
-    #year <- substr(start_date, 1,4)
+    year <- substr(start_date, 1,4)
     
     # These are the url filed types:
     # Urls are identical if all these fields exist
     args <- list(
     start_date <- start_date,
     end_date <- end_date,
-    year <- substr(start_date, 1,4),
     player_type <- player_type,
     playerid <- playerid) %>% purrr::set_names("start_date", "end_date", "year", "player_type", "playerid")
     
@@ -51,16 +50,7 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     # The else if statements are obnoxious, could probably replace with a single case statement.
     
     base_url <- "https://baseballsavant.mlb.com/statcast_search/csv?all=true&hfPT=&hfAB=&hfBBT=&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfGT=R%7C&hfC=&hfSea="
-    elem1 <- "%7C&hfSit=&player_type="
-    elem2 <- "&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
-    elem3 <- "&game_date_lt="
-    elem4 <- "&team=&position=&hfRO=&home_road=&"
-    ifelse(!is.null(playerid), playerelem <- paste0(player_type, "s_", "batters_lookup%5B%5D="), playerelem <- "")
-    elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
-    
-    url <- paste0(base_url, args$year, elem1, player_type, elem2,
-                  args$start_date, elem3, args$end_date, elem4, args$playerid, elem5)
-    
+
     # Test case 4 is fixed. Still need to do individual pitcher and batter, and also all pitchers and all batters.
     
     if(is.null(playerid) & is.null(player_type)) {
@@ -110,12 +100,7 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
                       end_date, "&team=&position=&hfRO=&home_road=&&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&")
     }
     
-   
 
-    
-    # New version of the below. Need to rename payload since we've got a class named that.
-    #out <- checkurl(read_csv(url))
-    
     
     tryCatch(
         {

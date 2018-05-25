@@ -2,7 +2,7 @@
 % Please edit documentation in R/statcast.R
 \name{statcast_payload}
 \alias{statcast_payload}
-\title{This is DEV and needs to be transformed into a payload_method.}
+\title{This is DEV and needs to be transformed into a payload_method}
 \usage{
 statcast_payload(start, end, player_id = NULL, player_type = NULL)
 }
@@ -16,14 +16,14 @@ statcast_payload(start, end, player_id = NULL, player_type = NULL)
 \item{player_type}{The player type. Can be 'batter' or 'pitcher'}
 }
 \description{
-This is DEV and needs to be transformed into a payload_method.
+This is DEV and needs to be transformed into a payload_method
 }
 \examples{
 \dontrun{
-scrape_statcast_savant(start = "2016-04-06", end = "2016-04-15", player_id = 621043, player_type='batter')
+statcast_payload(start = "2016-04-06", end = "2016-04-15", player_id = 621043, player_type='batter')
 
-scrape_statcast_savant(start = "2016-04-06", end = "2016-04-15", player_id = 592789, player_type='pitcher')
+statcast_payload(start = "2016-04-06", end = "2016-04-15", player_id = 592789, player_type='pitcher')
 
-scrape_statcast_savant(start = "2016-04-06", end = "2016-04-06")
+statcast_payload(start = "2016-04-06", end = "2016-04-06")
 }
 }

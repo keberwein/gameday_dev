@@ -8,28 +8,28 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' scrape_statcast_savant(start = "2016-04-06", end = "2016-04-15", player_id = 621043, player_type='batter')
+#' statcast_payload(start = "2016-04-06", end = "2016-04-15", player_id = 621043, player_type='batter')
 #'
-#' scrape_statcast_savant(start = "2016-04-06", end = "2016-04-15", player_id = 592789, player_type='pitcher')
+#' statcast_payload(start = "2016-04-06", end = "2016-04-15", player_id = 592789, player_type='pitcher')
 #'
-#' scrape_statcast_savant(start = "2016-04-06", end = "2016-04-06")
+#' statcast_payload(start = "2016-04-06", end = "2016-04-06")
 #' }
 
 statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     # Check to make sure args are in the correct format.
     if(is.null(player_type)) player_type <- "batter"
-    if(!is.character(start_date) | !is.character(end_date)) message("Please wrap your dates in quotations in 'yyyy-mm-dd' format.")
-    if(as.Date(start_date)<="2015-03-01") message("Some metrics such as Exit Velocity and Batted Ball Events have only been compiled since 2015.")
-    if(as.Date(start_date)<="2008-03-25") message("The data are limited to the 2008 MLB season and after.")
-    if(as.Date(start_date)==Sys.Date()) message("The data are collected daily at 3 a.m. Some of today's games may not be included.")
-    if(as.Date(start_date)>as.Date(end_date)) message("The start date is later than the end date.")
+    if(!is.character(start) | !is.character(end)) message("Please wrap your dates in quotations in 'yyyy-mm-dd' format.")
+    if(as.Date(start)<="2015-03-01") message("Some metrics such as Exit Velocity and Batted Ball Events have only been compiled since 2015.")
+    if(as.Date(start)<="2008-03-25") message("The data are limited to the 2008 MLB season and after.")
+    if(as.Date(start)==Sys.Date()) message("The data are collected daily at 3 a.m. Some of today's games may not be included.")
+    if(as.Date(start)>as.Date(end)) message("The start date is later than the end date.")
 
     args <- list(
-        start_date <- start_date,
-        end_date <- end_date,
-        year <- substr(start_date, 1,4),
+        start <- start,
+        end <- end,
+        year <- substr(start, 1,4),
         player_type <- player_type,
-        playerid <- playerid) %>% purrr::set_names("start_date", "end_date", "year", "player_type", "playerid")
+        player_id <- player_id) %>% purrr::set_names("start", "end", "year", "player_type", "player_id")
     
     for(i in seq_along(args)){
         if(is.null(args[[i]])) args[[i]] <- as.character("")
@@ -40,11 +40,11 @@ statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     elem2 <- "&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
     elem3 <- "&game_date_lt="
     elem4 <- "&team=&position=&hfRO=&home_road=&"
-    ifelse(!is.null(playerid), playerelem <- paste0(player_type, "s_", "batters_lookup%5B%5D="), playerelem <- "")
+    ifelse(!is.null(player_id), playerelem <- paste0(player_type, "s_", "batters_lookup%5B%5D="), playerelem <- "")
     elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
     
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
-                  args$start_date, elem3, args$end_date, elem4, args$playerid, elem5)
+                  args$start, elem3, args$date, elem4, args$player_id, elem5)
 
     if(isTRUE(checkurl(url))) out <- readr::read_csv(url)
     else message("Could not execute query. Please check your connection or try another query.")
