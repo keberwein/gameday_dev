@@ -40,11 +40,11 @@ statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     elem2 <- "&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt="
     elem3 <- "&game_date_lt="
     elem4 <- "&team=&position=&hfRO=&home_road=&"
-    ifelse(!is.null(player_id), playerelem <- paste0(player_type, "s_", "batters_lookup%5B%5D="), playerelem <- "")
+    ifelse(!is.null(player_id), playerelem <- paste0("s_", "batters_lookup%5B%5D="), playerelem <- "")
     elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
     
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
-                  args$start, elem3, args$date, elem4, args$player_id, elem5)
+                  args$start, elem3, args$start, elem4, playerelem, args$player_id, elem5)
 
     if(isTRUE(checkurl(url))) out <- readr::read_csv(url)
     else message("Could not execute query. Please check your connection or try another query.")
