@@ -1,7 +1,6 @@
 # TODO: Re-write params and examples
 # Prot code.
 
-
 #' This is DEV and needs to be transformed into a payload_method.
 #' 
 #' @param start_date Date of first game for which you want data. Format must be in YYYY-MM-DD format.
@@ -33,18 +32,6 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
     # extract season from start_date
     
     year <- substr(start_date, 1,4)
-    
-    # These are the url filed types:
-    # Urls are identical if all these fields exist
-    args <- list(
-    start_date <- start_date,
-    end_date <- end_date,
-    player_type <- player_type,
-    playerid <- playerid) %>% purrr::set_names("start_date", "end_date", "year", "player_type", "playerid")
-    
-    for(i in seq_along(args)){
-        if(is.null(args[[i]])) args[[i]] <- as.character("")
-    }
     
     # Looks like the url parsing could be much cleaner.
     # The else if statements are obnoxious, could probably replace with a single case statement.
@@ -125,6 +112,3 @@ scrape_statcast_savant <- function(start_date, end_date, playerid=NULL, player_t
         }
     )
 }
-
-
-#z <- scrape_statcast_savant(start_date = "2016-04-06", end_date = "2016-04-15", playerid = 621043, player_type='batter')
