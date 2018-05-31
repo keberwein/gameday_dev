@@ -5,6 +5,7 @@
 #' @param player_type The player type. Can be 'batter' or 'pitcher'
 #' @importFrom readr read_csv
 #' @importFrom purrr set_names
+#' @importFrom data.table fread
 #' @export
 #' @examples
 #' \dontrun{
@@ -46,6 +47,7 @@ statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
                   args$start, elem3, args$start, elem4, playerelem, args$player_id, elem5)
 
-    if(isTRUE(checkurl(url))) out <- readr::read_csv(url)
+    if(isTRUE(checkurl(url))) out <- data.table::fread(url, data.table=FALSE)
     else message("Could not execute query. Please check your connection or try another query.")
 }
+
