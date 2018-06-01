@@ -1,8 +1,9 @@
 #' This is DEV and needs to be transformed into a payload_method
-#' @param start Date of first game for which you want data. Format must be in YYYY-MM-DD format.
-#' @param end Date of last game for which you want data. Format must be in YYYY-MM-DD format.
-#' @param player_id The MLBAM ID for the player who's data you want to query.
-#' @param player_type The player type. Can be 'batter' or 'pitcher'
+#' @param start A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}
+#' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
+#' @param player_id The MLBAM ID of a specific player.
+#' @param player_type The role of the player as a string. The default is "batter". \code{"batter"} or \code{"pitcher"}
+#' 
 #' @importFrom readr read_csv
 #' @importFrom purrr set_names
 #' @importFrom data.table fread
