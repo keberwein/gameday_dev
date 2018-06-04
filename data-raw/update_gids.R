@@ -16,11 +16,14 @@ new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = as.ch
 
 # Format the linescore dataframe to match the gids df.
 new_game_ids <- new_gids$game %>% subset(status = "Final", 
-                                         select = c("gameday_link", "venue", "home_team_city", "home_team_name",
+                                         select = c("gameday_link", "game_pk", "venue", "home_team_city", "home_team_name",
                                                                       "away_team_city", "away_team_name", "game_type", "venue_id",
-                                                                      "home_team_id", "away_team_id")) %>%
-    mutate(gameday_link = paste0("gid_", gameday_link)) %>%
-    # Add dates to the df just so we can sort it.
+                                                                    "home_team_id", "away_team_id")) %>%
+    # Add date just so we can sort
+    mutate(gameday_link = paste0("gid_", gameday_link),
+           date_dt = stringr::str_sub(gameday_link, 9, 18) %>% stringr::str_replace_all("_", "-")) %>%
+
+    
     mlbgameday::gid_date() %>% arrange(date_dt)
 
 # Combine and re-save the dataframe.
