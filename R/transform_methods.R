@@ -148,7 +148,12 @@ transform_pload.list_linescore <- function(payload_obj, ...) {
     # TO DO: Need to convert the date/time fields to a 24-hour clock and to a date/time data format.
     # The way they are now are going to mess up any database we try to load them in to.
     
-    payload_obj$game %<>% dplyr::mutate(game_pk=as.numeric(game_pk), original_date=as.Date(original_date, format="Y/m/d"),
+    payload_obj$game %<>% dplyr::mutate(away_team_link = if (exists('away_team_link', where = payload_obj$pitch)) play_guid else NA,
+                                        highlights_available = if (exists('highlights_available', where = payload_obj$pitch)) play_guid else NA,
+                                        home_team_link = if (exists('home_team_link', where = payload_obj$pitch)) play_guid else NA,
+                                        pbp_last = if (exists('pbp_last', where = payload_obj$pitch)) play_guid else NA,
+                                        preview = if (exists('preview', where = payload_obj$pitch)) play_guid else NA,
+                                        game_pk=as.numeric(game_pk), original_date=as.Date(original_date, format="Y/m/d"),
                                         venue_id=as.numeric(venue_id), scheduled_innings=as.numeric(scheduled_innings),
                                         away_team_id=as.numeric(away_team_id), away_league_id=as.numeric(away_league_id),
                                         home_team_id=as.numeric(home_team_id), home_league_id=as.numeric(home_league_id),

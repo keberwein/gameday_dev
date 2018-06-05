@@ -7,13 +7,13 @@
 statcast_payload(start, end, player_id = NULL, player_type = NULL)
 }
 \arguments{
-\item{start}{Date of first game for which you want data. Format must be in YYYY-MM-DD format.}
+\item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}
 
-\item{end}{Date of last game for which you want data. Format must be in YYYY-MM-DD format.}
+\item{end}{An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}}
 
-\item{player_id}{The MLBAM ID for the player who's data you want to query.}
+\item{player_id}{The MLBAM ID of a specific player.}
 
-\item{player_type}{The player type. Can be 'batter' or 'pitcher'}
+\item{player_type}{The role of the player as a string. The default is "batter". \code{"batter"} or \code{"pitcher"}}
 }
 \description{
 This is DEV and needs to be transformed into a payload_method

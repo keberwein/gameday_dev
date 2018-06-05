@@ -14,7 +14,10 @@ registerDoParallel(cl)
 # use make_gids function to get gids not yet in the internal database.
 #new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = as.character(Sys.Date()-1), dataset = "linescore")
 
-new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2017-11-02", dataset = "linescore")
+#new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2017-11-02", dataset = "linescore")
+
+new_gids1 <- mlbgameday::get_payload(start = "2008-03-26", end = "2008-11-02", dataset = "linescore")
+
 
 # Format the linescore dataframe to match the gids df.
 new_game_ids <- new_gids$game %>% subset(status = "Final", 
