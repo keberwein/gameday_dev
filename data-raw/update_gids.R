@@ -16,11 +16,17 @@ registerDoParallel(cl)
 
 #new_gids <- mlbgameday::get_payload(start = as.character(last.date), end = "2017-11-02", dataset = "linescore")
 
-new_gids1 <- mlbgameday::get_payload(start = "2008-03-26", end = "2008-11-02", dataset = "linescore")
+new_gids <- gamedaydev::get_payload(start = "2008-03-26", end = "2010-11-02", dataset = "linescore")
+new_gids <- gamedaydev::get_payload(start = "2010-11-02", end = "2013-01-01", dataset = "linescore")
+new_gids <- gamedaydev::get_payload(start = "2013-01-02", end = "2015-01-01", dataset = "linescore")
+new_gids <- gamedaydev::get_payload(start = "2015-01-02", end = "2017-11-01", dataset = "linescore")
+
+
+new_gids <- gamedaydev::get_payload(start = "2017-09-22", end = "2017-11-01", dataset = "linescore")
 
 
 # Format the linescore dataframe to match the gids df.
-new_game_ids <- new_gids$game %>% subset(status = "Final", 
+new_game_ids5 <- new_gids$game %>% subset(status = "Final", 
                                          select = c("gameday_link", "game_pk", "venue", "home_team_city", "home_team_name",
                                                     "away_team_city", "away_team_name", "game_type", "venue_id",
                                                     "home_team_id", "away_team_id", "date")) %>%
