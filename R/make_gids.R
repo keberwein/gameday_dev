@@ -63,7 +63,6 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             newgidz <- seq(as.Date(start), as.Date(end), by = "day")
             newdates <- paste0("year_", format(newgidz, "%Y"), "/month_",
                                format(newgidz, "%m"), "/day_", format(newgidz, "%d"))
-            
     
             # Scrape the miniscoreboard for that day so we can extract game_id.
             final_gids <- validate_gids(newdates)
@@ -90,7 +89,7 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             
             startgids <- select(startgids, url)
             
-            final_gids <- c(startgids$gid, gapgids)
+           final_gids <- c(startgids$gid, gapgids)
         }
         
         made_gids <- game_urls(final_gids, dataset = dataset)
