@@ -46,7 +46,7 @@ statcast_payload <- function(start, end, player_id=NULL, player_type=NULL) {
     elem5 <- "&hfFlag=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name&sort_col=pitches&player_event_sort=h_launch_speed&sort_order=desc&min_abs=0&type=details&"
     
     url <- paste0(base_url, args$year, elem1, player_type, elem2,
-                  args$start, elem3, args$start, elem4, playerelem, args$player_id, elem5)
+                  args$start, elem3, args$end, elem4, playerelem, args$player_id, elem5)
 
     if(isTRUE(checkurl(url))) out <- data.table::fread(url, data.table=FALSE)
     else message("Could not execute query. Please check your connection or try another query.")

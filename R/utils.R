@@ -19,6 +19,15 @@ NULL
 #' @export
 NULL
 
+#' dt op
+#'
+#' @name :=
+#' @rdname dt_op
+#' @keywords internal
+#' @importFrom data.table :=
+#' @export
+NULL
+
 #' @title comb_pload
 #' @description Internal combine function for foreach loop used in get_payload()
 #' @param x target
@@ -80,7 +89,7 @@ pitch_count <- function(dat) {
 #' @description A utility function to run a tryCatch on a URL.
 #' @param target url
 #' @importFrom utils capture.output
-#' @export checkurl
+#' @export 
 checkurl <- function(target) {  
     tryCatch({  
         con <- url(target)  

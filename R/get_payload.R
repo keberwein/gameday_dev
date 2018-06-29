@@ -126,9 +126,7 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
         if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
         if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
         if(dataset=="game") innings_df <- payload.gd_game(urlz)
-        # Probably faster to do the transformation within the loop in cases where data gets very large.
-        #innings_df <- transform_pload(innings_df)
-        
+
         return(innings_df)
     }
 }

@@ -1,6 +1,9 @@
 z = statcast_payload(start = "2016-04-06", end = "2016-04-15", player_id = 592789, player_type='pitcher')
 
-z = statcast_payload(start = "2016-04-06", end = "2016-04-06")
+z = statcast_payload(start = "2016-05-06", end = "2016-09-30")
+
+innings_df <- get_payload(start = "2016-05-06", end = "2016-05-30")
+
 
 
 
@@ -17,7 +20,7 @@ zz = jz$items$data
 
 # Index playbyplay??
 groups <- jz$items$group
-idx <- which(groups=="descriptioin")
+idx <- which(groups=="playByPlay")
 
 # Probably going to have to spilt this into two dfs, batther and pitcher.
 # TODO Take a look at statcast columns from savant and make sure we've got all the right columns.

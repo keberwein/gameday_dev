@@ -20,8 +20,7 @@ Imports:
 	doParallel,
 	DBI,
 	readr,
-	data.table,
-	dplyr
+	data.table
 Suggests:
 	testthat,
 	knitr,
@@ -39,3 +38,17 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+Collate: 
+    'data.R'
+    'game_urls.R'
+    'get_payload.R'
+    'make_gids.R'
+    'mlbgameday.R'
+    'payloadev.R'
+    'payload_methods.R'
+    'serch_gids.R'
+    'statcast.R'
+    'statcast_dev.R'
+    'transform_methods.R'
+    'utils.R'
+    'validate_gids.R'
