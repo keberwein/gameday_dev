@@ -25,7 +25,7 @@ transform_pload(payload_obj, ...)
 \method{transform_pload}{df_game}(payload_obj, ...)
 }
 \arguments{
-\item{payload_obj}{An object returned by \code{get_payload()}.}
+\item{payload_obj}{An object returned by \code{get_pload()}.}
 
 \item{...}{additional arguments}
 }

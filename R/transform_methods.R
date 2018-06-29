@@ -39,7 +39,6 @@ transform_pload.list_bis_boxscore <- function(payload_obj, ...) {
 #' @export
 
 transform_pload.df_game_events <- function(payload_obj, ...) {
-    # Hack to get dplyr to mutate a generic object class. May not need this anymore.
     payload_obj <- structure(payload_obj, class="data.frame")
     
     payload_obj %<>%
@@ -60,7 +59,6 @@ transform_pload.df_game_events <- function(payload_obj, ...) {
 #' @export
 
 transform_pload.df_inning_hit <- function(payload_obj, ...) {
-    # Hack to get dplyr to mutate a generic object class. May not need this anymore.
     payload_obj <- structure(payload_obj, class="data.frame")
     payload_obj %<>%
         data.table::data.table() %>%

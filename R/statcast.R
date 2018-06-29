@@ -3,8 +3,6 @@
 #' @param end An end date passed as a character in ISO 8601 format. \code{"2017-09-01"}
 #' @param player_id The MLBAM ID of a specific player.
 #' @param player_type The role of the player as a string. The default is "batter". \code{"batter"} or \code{"pitcher"}
-#' 
-#' @importFrom readr read_csv
 #' @importFrom purrr set_names
 #' @importFrom data.table fread
 #' @export

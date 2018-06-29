@@ -33,14 +33,6 @@ get_pload.inning_all <- function(urlz, ...) {
                                     action_nodes <- c(xml2::xml_find_all(file, "./inning/top/action"), 
                                                       xml2::xml_find_all(file, "./inning/bottom/action"))
                                     
-                                    # Make action nodes a child of atbat so we can get the at-bat number for which the action took place.
-                                    #for (a in seq_along(action_nodes)) {
-                                    #    xml2::xml_add_child(atbat_nodes[[a]], action_nodes[[a]], .where = "after", free = T)
-                                    #}
-                                    
-                                    #action_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/action"), 
-                                    #                  xml2::xml_find_all(file, "./inning/bottom/atbat/actioin"))
-                                    
                                     pitch_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/pitch"),
                                                      xml2::xml_find_all(file, "./inning/bottom/atbat/pitch"))
                                     runner_nodes <- c(xml2::xml_find_all(file, "./inning/top/atbat/runner"), 
@@ -70,7 +62,6 @@ get_pload.inning_all <- function(urlz, ...) {
                                             out <- data.frame(t(xml2::xml_attrs(x)), stringsAsFactors=FALSE)
                                             out$inning <- as.numeric(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("num"))
                                             out$next_ <- as.character(xml2::xml_parent(xml2::xml_parent(x)) %>% xml2::xml_attr("next"))
-                                            #out$num <- as.numeric(xml2::xml_parent(x) %>% xml2::xml_attr("num"))
                                             out$inning_side <- as.character(xml2::xml_name(xml2::xml_parent(x)))
                                             out$url <- url
                                             out$gameday_link <- gameday_link
@@ -125,10 +116,8 @@ get_pload.inning_all <- function(urlz, ...) {
     acts <- action %>% .[, c("tfs_zulu", "inning", "inning_side", "des")]
     bats <- atbat %>% .[, c("end_tfs_zulu", "num", "inning", "inning_side")] %>% 
         data.table::setnames(old = "end_tfs_zulu", new = "tfs_zulu")
-    #bats <- atbat %>% dplyr::select(end_tfs_zulu, num, inning, inning_side) %>% dplyr::rename(tfs_zulu = end_tfs_zulu)
     events <- rbind(acts, bats, fill = T) %>%
         .[order(tfs_zulu)] %>% .[, num := as.numeric(num)] %>%
-        #dplyr::arrange(tfs_zulu) %>% dplyr::mutate(num = as.numeric(num)) %>%
         tidyr::fill(num, .direction = "up") %>% na.omit()
     
     action <- merge(action, events, by = c("tfs_zulu", "inning", "inning_side", "des"))
@@ -141,10 +130,6 @@ get_pload.inning_all <- function(urlz, ...) {
     player.env <- environment()
     data(player_ids, package="mlbgameday", envir=player.env)
     player_ids$id <- as.character(player_ids$id)
-    
-    #innings_df$atbat %<>% dplyr::left_join(player_ids, by = c("batter" = "id")) %>% 
-    #    dplyr::left_join(player_ids, by = c("pitcher" = "id")) %>% 
-    #    dplyr::rename(batter_name=full_name.x, pitcher_name=full_name.y)
     
     innings_df$atbat %<>%  merge(player_ids, by.x = "batter", by.y = "id") %>%
         merge(player_ids, by.x = "pitcher", by.y = "id") %>%
