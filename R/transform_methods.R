@@ -1,5 +1,5 @@
 #' Method for payload objects.
-#' @param payload_obj An object returned by \code{get_payload()}.
+#' @param payload_obj An object returned by \code{get_pload()}.
 #' @param ... additional arguments
 #' @keywords internal
 #' @export

@@ -4,8 +4,9 @@
 \alias{get_payload}
 \title{Get Gameday data from MLBAM.}
 \usage{
-get_payload(start = NULL, end = NULL, league = "mlb", dataset = NULL,
-  game_ids = NULL, db_con = NULL, overwrite = FALSE, ...)
+get_payload(start = NULL, end = NULL, league = "mlb",
+  source = "statcast", dataset = NULL, game_ids = NULL, db_con = NULL,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{start}{A start date passed as a character in ISO 8601 format. \code{"2017-05-01"}}

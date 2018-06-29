@@ -40,25 +40,61 @@
 #' df <- get_payload(game_ids = mygids)
 #' 
 #' 
-get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game_ids = NULL, db_con = NULL, overwrite = FALSE, ...) {
-    if(is.null(dataset)) dataset <- "inning_all"
+
+# Set query class, so we know what to do with the request.
+get_payload <- function(start=NULL, end=NULL, league="mlb", source="statcast", dataset = NULL, game_ids = NULL, db_con = NULL, overwrite = FALSE, ...){
+    args <- list(start=start, end=end, league=league, source=source, dataset=dataset, game_ids=game_ids, db_con=db_con, overwrite=overwrite)
+    ifelse(source==tolower("pitchfx"), args <- structure(args, class="pitchfx"), args <- structure(args, class="statcast"))
+    innings_df <- payload(args)
+    return(innings_df)
+}
+
+#' Method for get_payload objects.
+#' @param args An object returned by \code{get_payload()}.
+#' @param ... additional arguments
+#' @keywords internal
+#' @export
+
+payload <- function(args, ...) UseMethod("payload", args)
+
+#' @rdname payload
+#' @importFrom data.table data.table
+#' @method payload statcast
+#' @export
+
+payload.statcast <- function(args, ...) {
+    #placeholder for statcast methods
+    
+}
+
+# Main method for pitchfx data.
+#' @rdname payload
+#' @importFrom data.table data.table
+#' @method payload pitchfx
+#' @export
+
+payload.pitchfx <- function(args, ...) {
+    if(is.null(args$dataset)) args$dataset <- "inning_all"
     message("Gathering Gameday data, please be patient...")
     
-    if(!is.null(game_ids)) urlz <- make_gids(game_ids = game_ids, dataset = dataset)
+    if(!is.null(args$game_ids)) urlz <- make_gids(game_ids = args$game_ids, dataset = args$dataset)
     
-    if(!is.null(start) & !is.null(end)){
-        if(start < as.Date("2008-01-01")){
+    if(!is.null(args$start) & !is.null(args$end)){
+        if(args$start < as.Date("2008-01-01")){
             stop("Please select a later start date. The data are not dependable prior to 2008.")
         }
-        if(end >= Sys.Date()) stop("Please select an earlier end date.")
+        if(args$end >= Sys.Date()) stop("Please select an earlier end date.")
         
-        if(start > end) stop("Your start date appears to occur after your end date.")
-        start <- as.Date(as.character(start)); end <- as.Date(end); league <- tolower(league)
+        if(args$start > args$end) stop("Your start date appears to occur after your end date.")
+        start <- as.Date(as.character(args$start)); end <- as.Date(args$end); league <- tolower(args$league)
         # Get gids via internal function.
-        urlz <- make_gids(start = start, end = end, dataset = dataset)
+        urlz <- make_gids(start = args$start, end = args$end, dataset = args$dataset)
     }
     
-    if(!is.null(db_con)){
+    # Make urlz a subclass of pitchfx so get_payload knows what to do.
+    urlz <- structure(urlz, class= c(args$dataset, "pitchfx"))
+
+    if(!is.null(args$db_con)){
         # Chunk out URLs in groups of 300 if a database connection is available.
         url_chunks <- split(urlz, ceiling(seq_along(urlz)/500))
         innings_df=NULL
@@ -67,49 +103,32 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
             message(paste0("Processing data chunk ", i, " of ", length(url_chunks)))
             urlz <- unlist(url_chunks[i])
             # inning_all and linescore contain multiple tables, so those need to be written in a loop.
-            if(dataset == "inning_all" | dataset=="linescore"){
-                if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
-                if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
+            if(args$dataset == "inning_all" | args$dataset=="linescore"){
+                if(args$dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
+                if(args$dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
                 
-                if(isTRUE(overwrite)){
-                    for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, overwrite = TRUE)
+                if(isTRUE(args$overwrite)){
+                    for (i in names(innings_df)) DBI::dbWriteTable(conn = args$db_con, value = innings_df[[i]], name = i, overwrite = TRUE)
                 }
-                if(!isTRUE(overwrite)){
-                    for (i in names(innings_df)) DBI::dbWriteTable(conn = db_con, value = innings_df[[i]], name = i, append = TRUE)
+                if(!isTRUE(args$overwrite)){
+                    for (i in names(innings_df)) DBI::dbWriteTable(conn = args$db_con, value = innings_df[[i]], name = i, append = TRUE)
                 }
                 
             } else {
-                if(dataset=="inning_hit"){
-                    innings_df <- payload.gd_inning_hit(urlz)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "inning_hit", overwrite = TRUE)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "inning_hit", append = TRUE)
-                }
-                if(dataset=="game_events"){
-                    innings_df <- payload.gd_inning_hit(urlz)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game_events", overwrite = TRUE)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game_events", append = TRUE)                    
-                }
-                if(dataset=="game"){
-                    innings_df <- payload.gd_inning_hit(urlz)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game", overwrite = TRUE)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "game", append = TRUE)                         
-                }
-                if(dataset=="bis_boxscore"){
-                    innings_df <- payload.gd_inning_hit(urlz)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "bis_boxscore", overwrite = TRUE)
-                    if(isTRUE(overwrite)) DBI::dbWriteTable(conn = db_con, value = innings_df, name = "bis_boxscore", append = TRUE)  
-                } 
+                innings_df <- get_pload(urlz)
+                if(isTRUE(args$overwrite)) DBI::dbWriteTable(conn = args$db_con, value = innings_df, name = args$dataset, overwrite = TRUE)
+                if(!isTRUE(args$overwrite)) DBI::dbWriteTable(conn = args$db_con, value = innings_df, name = args$dataset, append = TRUE)
             }
-
+            
             # Manual garbage collect after every loop of 500 games.
             rm(innings_df); gc()
         }
         
-        DBI::dbDisconnect(db_con)
+        DBI::dbDisconnect(args$db_con)
         message(paste0("Transaction complete, disconnecting from the database.", " ", Sys.time()))
     }
     
-    if(is.null(db_con)){
+    if(is.null(args$db_con)){
         # If no database connection, just return a dataframe.
         # If the returned dataframe looks like it's going to be large, warn the user.
         if(length(urlz) > 3500) { # One full season including spring training and playoffs is around 3000 games.
@@ -120,15 +139,9 @@ get_payload <- function(start=NULL, end=NULL, league="mlb", dataset = NULL, game
                 message("Starting download, this may take a while...") 
             }
         }
-        if(dataset == "bis_boxscore") innings_df <- payload.gd_bis_boxscore(urlz)
-        if(dataset == "game_events") innings_df <- payload.gd_game_events(urlz)
-        if(dataset == "inning_all") innings_df <- payload.gd_inning_all(urlz)
-        if(dataset=="inning_hit") innings_df <- payload.gd_inning_hit(urlz)
-        if(dataset=="linescore") innings_df <- payload.gd_linescore(urlz)
-        if(dataset=="game") innings_df <- payload.gd_game(urlz)
-
+        
+        innings_df <- get_pload(urlz)
+        
         return(innings_df)
     }
 }
-
-

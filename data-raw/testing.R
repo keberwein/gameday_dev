@@ -12,7 +12,7 @@ registerDoParallel(cl)
 
 s = Sys.time()
 
-innings_df <- get_payload(start = "2017-05-01", end = "2017-05-01")
+innings_df <- get_payload(start = "2017-05-01", end = "2017-05-01", source = "pitchfx", dataset = "game")
 
 f = s - Sys.time()
 

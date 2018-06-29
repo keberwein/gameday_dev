@@ -1,5 +1,5 @@
-#' Method for payload objects.
-#' @param urlz_obj An object returned by \code{get_payload()}.
+#' Method for url objects provided from the payload class
+#' @param urlz_obj An object returned by \code{playload()}.
 #' @param ... additional arguments
 #' @keywords internal
 #' @export
