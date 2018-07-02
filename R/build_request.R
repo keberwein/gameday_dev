@@ -42,4 +42,8 @@ build_request.statcast <- function(args=NULL, ...) {
     
     urlz <- paste0(base_url, args$year, elem1, player_type, elem2,
                   args$start, elem3, args$end, elem4, playerelem, args$player_id, elem5)
+    
+    urlz <- structure(urlz, class= c(args$dataset, "statcast"))
+    
+    return(urlz)
 }
