@@ -49,7 +49,6 @@ transform_pload.df_game_events <- function(payload_obj, ...) {
                   home_team_runs=as.numeric(home_team_runs), away_team_runs=as.numeric(away_team_runs),
                   inning=as.numeric(inning))]
     
-    # Revert object to the old class for the load functions.
     return(payload_obj)
 }
 
@@ -187,7 +186,6 @@ transform_pload.list_linescore <- function(payload_obj, ...) {
     
     return(payload_obj)
 }
-
 
 #' @rdname transform_pload
 #' @importFrom data.table data.table

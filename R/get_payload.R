@@ -65,7 +65,17 @@ payload <- function(args, ...) UseMethod("payload", args)
 #' @export
 
 payload.statcast <- function(args, ...) {
-    #placeholder for statcast methods
+    if(is.null(args$player_type)) args$player_type <- "batter"
+    if(!is.character(args$start) | !is.character(args$end)) message("Please wrap your dates in quotations in 'yyyy-mm-dd' format.")
+    if(as.Date(args$start)<="2015-03-01") message("Some metrics such as Exit Velocity and Batted Ball Events have only been compiled since 2015.")
+    if(as.Date(args$start)<="2008-03-25") message("The data are limited to the 2008 MLB season and after.")
+    if(as.Date(args$start)==Sys.Date()) message("The data are collected daily at 3 a.m. Some of today's games may not be included.")
+    if(as.Date(args$start)>as.Date(args$end)) message("The start date is later than the end date.")
+    
+    urlz <- build_request(args)
+    
+    if(isTRUE(checkurl(url))) out <- data.table::fread(url, data.table=FALSE)
+    else message("Could not execute query. Please check your connection or try another query.")
     
 }
 
@@ -79,23 +89,16 @@ payload.pitchfx <- function(args, ...) {
     if(is.null(args$dataset)) args$dataset <- "inning_all"
     message("Gathering Gameday data, please be patient...")
     
-    if(!is.null(args$game_ids)) urlz <- make_gids(game_ids = args$game_ids, dataset = args$dataset)
-    
     if(!is.null(args$start) & !is.null(args$end)){
         if(args$start < as.Date("2008-01-01")){
             stop("Please select a later start date. The data are not dependable prior to 2008.")
         }
         if(args$end >= Sys.Date()) stop("Please select an earlier end date.")
-        
         if(args$start > args$end) stop("Your start date appears to occur after your end date.")
-        start <- as.Date(as.character(args$start)); end <- as.Date(args$end); league <- tolower(args$league)
-        # Get gids via internal function.
-        urlz <- make_gids(start = args$start, end = args$end, dataset = args$dataset)
     }
-    
-    # Make urlz a subclass of pitchfx so get_payload knows what to do.
-    urlz <- structure(urlz, class= c(args$dataset, "pitchfx"))
 
+    urlz <- build_request(args)
+    
     if(!is.null(args$db_con)){
         # Chunk out URLs in groups of 300 if a database connection is available.
         url_chunks <- split(urlz, ceiling(seq_along(urlz)/500))

@@ -39,12 +39,12 @@ LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Collate: 
+    'build_request.R'
     'data.R'
     'game_urls.R'
     'get_payload.R'
     'make_gids.R'
     'mlbgameday.R'
-    'payloadev.R'
     'payload_methods.R'
     'serch_gids.R'
     'statcast.R'
