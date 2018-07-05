@@ -41,7 +41,7 @@
 #' 
 #' 
 
-get_payload <- function(start=NULL, end=NULL, league="mlb", source="statcast", 
+get_payload <- function(start=NULL, end=NULL, league="mlb", source="statcast",
                         dataset = NULL, game_ids = NULL, db_con = NULL, overwrite = FALSE, ...){
     args <- list(start=start, end=end, league=league, source=source, 
                  dataset=dataset, game_ids=game_ids, db_con=db_con, overwrite=overwrite)

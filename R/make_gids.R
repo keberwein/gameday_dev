@@ -49,11 +49,12 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
         
         # If we've got the whole range of gids internally, just grab them and format.
         if(start >= first_date & end <= last_date){
-            final_gids <- subset(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(end))
-            final_gids$url <- paste0(root, "year_", stringr::str_sub(final_gids$date_dt, 1, 4), "/month_",
-                                     stringr::str_sub(final_gids$date_dt, 6,7), "/day_", 
-                                     stringr::str_sub(final_gids$date_dt, 9, 10),
-                                     "/", final_gids$gid)
+            final_gids <- subset(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(end)) %>%
+                .[, `:=` (url = paste0(root, league, "/", "year", stringr::str_sub(startgids$gid, 4, 8), "/", "month_",
+                                       stringr::str_sub(startgids$gid, 10, 11), "/", "day_", stringr::str_sub(startgids$gid, 13, 14), 
+                                       "/", startgids$gid))]
+                
+            
             final_gids <- final_gids$url %>% as.list()
         }
         
@@ -82,11 +83,14 @@ make_gids <- function(start=NULL, end=NULL, league="mlb", dataset=NULL, game_ids
             
             # Get the other gids not in the end window.
             startgids <- subset(gid_dates, date_dt >= as.Date(start) & date_dt <= as.Date(last_date)) %>%
-                .[, `:=` (gid = as.character(gid), date_dt = as.Date(date_dt))]
+                .[, `:=` (gid = as.character(gid), date_dt = as.Date(date_dt), 
+                          url = paste0(root, league, "/", "year", stringr::str_sub(startgids$gid, 4, 8), "/", "month_",
+                                       stringr::str_sub(startgids$gid, 10, 11), "/", "day_", stringr::str_sub(startgids$gid, 13, 14), 
+                                       "/", startgids$gid))]
             
-            startgids$url <- paste0(root, league, "/", "year", stringr::str_sub(startgids$gid, 4, 8), "/", "month_",
-                                    stringr::str_sub(startgids$gid, 10, 11), "/", "day_", stringr::str_sub(startgids$gid, 13, 14), 
-                                    "/", startgids$gid)
+            #startgids$url <- paste0(root, league, "/", "year", stringr::str_sub(startgids$gid, 4, 8), "/", "month_",
+            #                        stringr::str_sub(startgids$gid, 10, 11), "/", "day_", stringr::str_sub(startgids$gid, 13, 14), 
+            #                        "/", startgids$gid)
             
             startgids <- startgids$url
             

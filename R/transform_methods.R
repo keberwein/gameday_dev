@@ -83,6 +83,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         .[, event3 := if (exists('event3', where = payload_obj$atbat)) event3 else NA] %>%
         .[, event4 := if (exists('event4', where = payload_obj$atbat)) event4 else NA] %>%
         .[, des_es := if (exists('des_es', where = payload_obj$atbat)) des_es else NA] %>%
+        .[, end_tfs_zulu := if (exists('end_tfs_zulu', where = payload_obj$atbat)) end_tfs_zulu else NA] %>%
         .[, `:=` (num = as.numeric(num), b = as.numeric(b), s = as.numeric(s), o = as.numeric(o),
                   batter = as.numeric(batter), pitcher = as.numeric(pitcher), date = as.factor(date))] %>%
         data.table::setnames(old = c("des", "des_es"), new = c("atbat_des", "atbat_des_es")) %>%
@@ -100,6 +101,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         .[, event2_es := if (exists('event2_es', where = payload_obj$action)) event2_es else NA] %>%
         .[, des_es := if (exists('des_es', where = payload_obj$action)) des_es else NA] %>%
         .[, score := if (exists('score', where = payload_obj$action)) des_es else NA] %>%
+        
         .[, `:=` (b = as.numeric(b), s = as.numeric(s), o = as.numeric(o), player = as.numeric(player),
                   pitch = as.numeric(pitch), num = as.character(num))] %>%
         data.table::setcolorder(c("b", "s", "o", "des", "des_es", "event", "tfs", "tfs_zulu", "player", "pitch", "url", 
@@ -111,6 +113,7 @@ transform_pload.list_inning_all <- function(payload_obj, ...) {
         # Add columns that may not exist.
         .[, des_es := if (exists('des_es', where = payload_obj$pitch)) des_es else NA] %>%
         .[, event2 := if (exists('event2', where = payload_obj$pitch)) event2 else NA] %>%
+        .[, code := if (exists('code', where = payload_obj$pitch)) code else NA] %>%
         .[, event2_es := if (exists('event2_es', where = payload_obj$pitch)) event2_es else NA] %>%
         .[, tfs := ifelse(tfs == "", NA, tfs)] %>% .[, tfs_zulu := ifelse(tfs_zulu == "", NA, tfs_zulu)] %>%
         .[, start_speed := ifelse(start_speed == "", NA, as.numeric(start_speed))] %>%

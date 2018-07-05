@@ -114,8 +114,8 @@ get_pload.inning_all <- function(urlz, ...) {
     
     # Make of game timeline of atbat and action so we know which atbat to assign an action to.
     acts <- action %>% .[, c("tfs_zulu", "inning", "inning_side", "des")]
-    bats <- atbat %>% .[, c("end_tfs_zulu", "num", "inning", "inning_side")] %>% 
-        data.table::setnames(old = "end_tfs_zulu", new = "tfs_zulu")
+    bats <- atbat %>% .[, c("start_tfs_zulu", "num", "inning", "inning_side")] %>% 
+        data.table::setnames(old = "start_tfs_zulu", new = "tfs_zulu")
     events <- rbind(acts, bats, fill = T) %>%
         .[order(tfs_zulu)] %>% .[, num := as.numeric(num)] %>%
         tidyr::fill(num, .direction = "up") %>% na.omit()
